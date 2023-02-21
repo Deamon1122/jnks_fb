@@ -8,7 +8,7 @@ pipeline {
 	stages {
 	    stage('Git clone') {
 	        steps {
-            git credentialsId: 'github', url:'https://github.com/Deamon1122/Asweb.git'
+            git branch: 'main', credentialsId: 'Deamon1122', url: 'https://github.com/Deamon1122/new-project.git'
             }
 		    }
         stage('MVN version') {
@@ -41,9 +41,23 @@ pipeline {
             sh 'mvn package'
 			}
 			}
-        stage('mvn Deploy') {
+        stage('upload war to nexus') {
 	        steps {
-            sh 'mvn deploy'
+                   nexusArtifactUploader artifacts: [
+			            [
+			              artifactId: 'basic-webapp', 
+				          classifier: '', 
+				          file: 'target/basic-webapp-1.0.0.war', 
+				          type: 'war'
+				        ]
+				    ],
+				    credentialsId: 'nexus3', 
+					groupId: 'org.bytesizebook.com.guide.boot', 
+					nexusUrl: '54.175.35.90:8081', 
+					nexusVersion: 'nexus3', 
+					protocol: 'http', 
+					repository: 'http://54.175.35.90:8081/repository/As-app', 
+					version: '1.0.0'
 			}
 			}				
 		}	
